@@ -14,22 +14,21 @@ import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Flow, Sink, Source}
-import org.joda.time.{DateTime, DateTimeZone}
 import spray.json._
 import com.snapswap.telesign.model._
+import com.snapswap.telesign.utils.DateTimeHelper._
 
 class AkkaHttpTelesignClient(customerId: String, apiKey: String, useCaseCode: EnumUseCaseCodes.UseCaseCode)
                             (implicit system: ActorSystem, materializer: Materializer) extends TelesignClient {
 
-  import TelesignDateFormat._
   import com.snapswap.telesign.unmarshaller.UnMarshallerVerify._
   import system.dispatcher
 
   private val log = Logging(system, this.getClass)
   private val baseURL = "/v1"
-  protected val decodedKey = Base64.getDecoder.decode(apiKey)
+  protected val decodedKey: Array[Byte] = Base64.getDecoder.decode(apiKey)
   protected val signingKey = new SecretKeySpec(decodedKey, "HmacSHA256")
-  protected val mac = {
+  protected val mac: Mac = {
     val _mac = Mac.getInstance("HmacSHA256")
     _mac.init(signingKey)
     _mac
@@ -72,8 +71,7 @@ class AkkaHttpTelesignClient(customerId: String, apiKey: String, useCaseCode: En
       .log("telesign")
 
   private def http(request: HttpRequest): Future[HttpResponse] = {
-    val now = new DateTime(DateTimeZone.UTC)
-    val date = dateFormat.print(now)
+    val dateAsString = nowUTC().format(PATTERN)
 
     val method = request.method match {
       case HttpMethods.GET =>
@@ -84,14 +82,14 @@ class AkkaHttpTelesignClient(customerId: String, apiKey: String, useCaseCode: En
     val contentType = request.method match {
       case HttpMethods.POST =>
         "application/x-www-form-urlencoded; charset=UTF-8"
-      case other =>
+      case _ =>
         ""
     }
 
     val dataFuture = request.method match {
       case HttpMethods.POST =>
         Unmarshal(request.entity)
-          .to[FormData].map { case formData =>
+          .to[FormData].map { formData =>
           val dataString = formData.fields.map {
             case (key, value) =>
               s"$key=${URLEncoder.encode(value, "UTF-8")}"
@@ -101,23 +99,22 @@ class AkkaHttpTelesignClient(customerId: String, apiKey: String, useCaseCode: En
              |$contentType
              |
              |x-ts-auth-method:HMAC-SHA256
-             |x-ts-date:$date
+             |x-ts-date:$dateAsString
              |$dataString
              |${request.uri.path}""".stripMargin
         }
-      case other =>
+      case _ =>
         Future.successful(
           s"""$method
              |$contentType
              |
              |x-ts-auth-method:HMAC-SHA256
-             |x-ts-date:$date
+             |x-ts-date:$dateAsString
              |${request.uri.path}""".stripMargin
         )
     }
 
-    dataFuture.flatMap {
-      case data =>
+    dataFuture.flatMap { data =>
         val rawHmac = mac.doFinal(data.getBytes())
         val signature = new String(Base64.getEncoder.encode(rawHmac))
 
@@ -125,7 +122,7 @@ class AkkaHttpTelesignClient(customerId: String, apiKey: String, useCaseCode: En
           .single(
             request
               .addHeader(signatureHeader(signature))
-              .addHeader(dateHeader(date))
+              .addHeader(dateHeader(dateAsString))
               .addHeader(authMethodHeader("HMAC-SHA256"))
           )
           .via(layerConnectionFlow)
