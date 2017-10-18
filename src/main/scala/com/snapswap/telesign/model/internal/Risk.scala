@@ -1,4 +1,4 @@
-package com.snapswap.telesign.model
+package com.snapswap.telesign.model.internal
 
 /**
   * An object that describes the risk score for the phone number specified in the request.
@@ -8,5 +8,5 @@ package com.snapswap.telesign.model
   * @param recommendation A string indicating the action that TeleSign recommends that you take based on the risk score.
   */
 private[telesign] case class Risk(level: String,
-                score: Int,
-                recommendation: String)
+                                  score: Int,
+                                  recommendation: String)

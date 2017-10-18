@@ -1,4 +1,4 @@
-package com.snapswap.telesign
+package com.snapswap.telesign.model.external
 
 /**
   * An array of property-value pairs, that contain information on error conditions that might have resulted from the Request.

@@ -1,12 +1,13 @@
 package com.snapswap.telesign.model
 
+import com.snapswap.telesign.model.external.{EnumPhoneTypes, PhoneScore, TelesignError, TelesignInvalidPhoneNumber}
+import com.snapswap.telesign.model.internal.ErrorResponse
+import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import org.scalatest.{FlatSpec, Matchers}
 import spray.json._
-import com.snapswap.telesign.{EnumPhoneTypes, TelesignError, PhoneScore, TelesignInvalidPhoneNumber}
-import com.snapswap.telesign.unmarshaller.UnMarshallerVerify
 
 class UnMarshallerSpec extends FlatSpec with Matchers {
-  import UnMarshallerVerify._
+  import UnmarshallerVerify._
 
   "Unmarshaller" should "be able to parse PhoneScore from a success response" in {
     val score = phoneIdScoreResponse.parseJson.convertTo[PhoneScore]

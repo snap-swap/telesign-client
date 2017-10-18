@@ -1,4 +1,4 @@
-package com.snapswap.telesign
+package com.snapswap.telesign.model.external
 
 import scala.util.control.NoStackTrace
 

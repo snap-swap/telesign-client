@@ -1,4 +1,4 @@
-package com.snapswap.telesign
+package com.snapswap.telesign.model.external
 
 object EnumRisks extends Enumeration {
   type Risk = Value
@@ -20,8 +20,8 @@ object EnumActions extends Enumeration {
 object EnumPhoneTypes extends Enumeration {
   type PhoneType = PhoneTypeValue
 
-  import EnumRisks._
   import EnumActions._
+  import EnumRisks._
 
   protected case class PhoneTypeValue(code: Int, risk: EnumRisks.Risk, action: EnumActions.Action, label: String) extends super.Val() {
     override def toString(): String =

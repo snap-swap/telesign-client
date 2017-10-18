@@ -1,5 +1,7 @@
 package com.snapswap.telesign
 
+import com.snapswap.telesign.model.external.{PhoneScore, PhoneVerification, PhoneVerificationId}
+
 import scala.concurrent.Future
 
 trait TelesignClient {

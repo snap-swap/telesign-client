@@ -1,4 +1,4 @@
-package com.snapswap.telesign.model
+package com.snapswap.telesign.model.internal
 
 /**
   * An object containing details about the request status.
@@ -8,5 +8,5 @@ package com.snapswap.telesign.model
   * @param description A description of the transaction status.
   */
 private[telesign] case class Status(updatedOn: String,
-                  code: Int,
-                  description: String)
+                                    code: Int,
+                                    description: String)

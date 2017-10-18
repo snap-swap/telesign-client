@@ -1,4 +1,4 @@
-package com.snapswap.telesign.model
+package com.snapswap.telesign.model.internal
 
 /**
   * An object containing details about the phone type.
@@ -7,4 +7,4 @@ package com.snapswap.telesign.model
   * @param description A description of the phone type.
   */
 private[telesign] case class PhoneType(code: String,
-                     description: String)
+                                       description: String)

@@ -1,10 +1,11 @@
 package com.snapswap.telesign.unmarshaller
 
-import com.snapswap.telesign.TelesignError
-import com.snapswap.telesign.model.{ErrorResponse, Risk, Status}
+import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
+import com.snapswap.telesign.model.external.TelesignError
+import com.snapswap.telesign.model.internal.{ErrorResponse, Risk, Status}
 import spray.json._
 
-trait CommonUnMarshaller extends DefaultJsonProtocol {
+trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   protected def enumNameFormat(enum: Enumeration) = new RootJsonFormat[enum.Value] {
     def read(value: JsValue): enum.Value = value match {
       case JsString(s) => enum.withName(s)

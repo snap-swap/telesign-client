@@ -1,13 +1,14 @@
 package com.snapswap.telesign.unmarshaller
 
-import scala.util.{Try, Success, Failure}
+import com.snapswap.telesign.model.external.{EnumPhoneTypes, PhoneScore, TelesignInvalidPhoneNumber, TelesignRequestFailure}
+import com.snapswap.telesign.model.internal.{Carrier, CleansingNumber, Coordinates, Country, Location, Number, Numbering, OriginalNumber, PhoneIdResponse, PhoneType, TimeZone}
 import spray.json._
-import com.snapswap.telesign.{PhoneScore, TelesignInvalidPhoneNumber, EnumPhoneTypes, TelesignRequestFailure}
-import com.snapswap.telesign.model._
 
-trait PhoneIdResponseUnMarshaller
+import scala.util.{Failure, Success, Try}
+
+trait PhoneIdResponseUnmarshaller
   extends DefaultJsonProtocol {
-  this: CommonUnMarshaller =>
+  this: CommonJsonSupport =>
 
   implicit val phoneTypeFormat = jsonFormat2(PhoneType)
   implicit val originalNumberFormat = jsonFormat(OriginalNumber, "phone_number", "complete_phone_number", "country_code")
@@ -45,16 +46,16 @@ trait PhoneIdResponseUnMarshaller
 
         val _score: Int = response.risk.map(_.score).getOrElse(1000) // 1000 is the highest risk value, see http://docs.telesign.com/rest/content/xt/xt-score.html#xref-score
         val _phoneType = response
-            .phoneType
-            .map {
-              case pt =>
-                Try(EnumPhoneTypes.withId(pt.code.toInt)) match {
-                  case Success(ptt) =>
-                    ptt
-                  case Failure(ex) =>
-                    EnumPhoneTypes.Other
-                }
-            }.getOrElse(EnumPhoneTypes.Other)
+          .phoneType
+          .map {
+            case pt =>
+              Try(EnumPhoneTypes.withId(pt.code.toInt)) match {
+                case Success(ptt) =>
+                  ptt
+                case Failure(ex) =>
+                  EnumPhoneTypes.Other
+              }
+          }.getOrElse(EnumPhoneTypes.Other)
 
         PhoneScore(
           phone = phone,

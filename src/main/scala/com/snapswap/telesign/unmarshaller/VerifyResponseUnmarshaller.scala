@@ -1,11 +1,11 @@
 package com.snapswap.telesign.unmarshaller
 
-import com.snapswap.telesign.model._
+import com.snapswap.telesign.model.internal._
 import spray.json._
 
-trait VerifyResponseUnMarshaller
+trait VerifyResponseUnmarshaller
   extends DefaultJsonProtocol {
-  this: CommonUnMarshaller =>
+  this: CommonJsonSupport =>
 
   implicit val deviceFormat = jsonFormat(Device, "phone_number", "operating_system", "language")
   implicit val appFormat = jsonFormat(App, "signature", "created_on_utc")
