@@ -1,7 +1,5 @@
 package com.snapswap.telesign.model.internal
 
-import com.snapswap.telesign.model.external.TelesignError
-
 /**
   * An object containing details about the original phone number passed to TeleSign PhoneID API.
   *
@@ -121,7 +119,6 @@ private[telesign] case class Location(county: Option[String],
   * @param referenceId     A String containing a <em>reference identifier</em> that uniquely identifies the Request message that initiated this Response.
   * @param resourceUri     A String containing the URI for accesses the PhoneID resource.
   * @param subResource     A String containing the name of the subresource that was accessed. For example, "standard".
-  * @param errors          An array of { @link com.snapswap.telesign.model.TelesignError} objects. Each Error object contains information about an error condition that might have resulted from the Request.
   * @param phoneType       An object that contains details about the phone type.
   * @param signatureString A String containing the Signature, exactly as it was sent in the Request.
   *                        Unless the request contained an invalid Signature, this contains an empty string.
@@ -134,7 +131,6 @@ private[telesign] case class Location(county: Option[String],
 private[telesign] case class PhoneIdResponse(referenceId: Option[String],
                                              resourceUri: Option[String],
                                              subResource: Option[String],
-                                             errors: Seq[TelesignError],
                                              phoneType: Option[PhoneType],
                                              signatureString: Option[String],
                                              status: Status,

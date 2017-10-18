@@ -17,7 +17,7 @@ trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
 
   implicit val errorFormat = jsonFormat2(TelesignError)
 
-  implicit val statusFormat = jsonFormat(Status, "updated_on", "code", "description")
+  implicit val statusFormat = jsonFormat(Status.apply, "updated_on", "code", "description")
 
   implicit val riskFormat = jsonFormat3(Risk)
 

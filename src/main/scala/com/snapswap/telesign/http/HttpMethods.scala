@@ -15,10 +15,8 @@ import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
 import com.snapswap.telesign.model.external.TelesignRequestFailure
-import com.snapswap.telesign.model.internal.ErrorResponse
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import com.snapswap.telesign.utils.DateTimeHelper._
-import spray.json._
 
 import scala.concurrent.{ExecutionContext, Future}
 import scala.util.{Failure, Success, Try}
@@ -77,7 +75,7 @@ trait HttpMethods {
               asString
             } else {
               log.error(s"FAILURE ${request.method} ${request.uri} -> ${response.status} '$asString'")
-              throw TelesignRequestFailure(asString.parseJson.convertTo[ErrorResponse].errors)
+              throw TelesignRequestFailure(response.status, asString)
             }
           }.map(handler)
       }

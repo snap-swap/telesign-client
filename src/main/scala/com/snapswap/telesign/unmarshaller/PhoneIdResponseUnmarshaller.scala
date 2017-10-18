@@ -1,7 +1,7 @@
 package com.snapswap.telesign.unmarshaller
 
 import com.snapswap.telesign.model.external.{EnumPhoneTypes, PhoneScore, TelesignInvalidPhoneNumber, TelesignRequestFailure}
-import com.snapswap.telesign.model.internal.{Carrier, CleansingNumber, Coordinates, Country, Location, Number, Numbering, OriginalNumber, PhoneIdResponse, PhoneType, TimeZone}
+import com.snapswap.telesign.model.internal.{Carrier, CleansingNumber, Coordinates, Country, Location, Number, Numbering, OriginalNumber, PhoneIdResponse, PhoneType, Status, TimeZone}
 import spray.json._
 
 import scala.util.{Failure, Success, Try}
@@ -20,13 +20,13 @@ trait PhoneIdResponseUnmarshaller
   implicit val coordinatesFormat = jsonFormat2(Coordinates)
   implicit val carrierFormat = jsonFormat1(Carrier)
   implicit val locationFormat = jsonFormat(Location, "county", "city", "state", "zip", "country", "time_zone", "coordinates", "metro_code")
-  implicit val phoneIdResponseFormat = jsonFormat(PhoneIdResponse, "reference_id", "resource_uri", "sub_resource", "errors", "phone_type", "signature_string", "status", "numbering", "location", "carrier", "risk")
+  implicit val phoneIdResponseFormat = jsonFormat(PhoneIdResponse, "reference_id", "resource_uri", "sub_resource", "phone_type", "signature_string", "status", "numbering", "location", "carrier", "risk")
 
   implicit val phoneScoreReader = new RootJsonReader[PhoneScore] {
     override def read(json: JsValue) = {
       val response: PhoneIdResponse = phoneIdResponseFormat.read(json)
-      if (response.errors.nonEmpty) {
-        throw TelesignRequestFailure(response.errors)
+      if (Status.isFailed(response.status)) {
+        throw TelesignRequestFailure(response.status)
       } else {
         val country: String = response.location.flatMap(_.country.map(_.iso3)).getOrElse {
           throw TelesignInvalidPhoneNumber("ISO 3166-1 3-letter country code is not detected")

@@ -1,10 +1,14 @@
 package com.snapswap.telesign.model.external
 
+import akka.http.scaladsl.model.StatusCode
+import com.snapswap.telesign.model.internal.Status
+
 import scala.util.control.NoStackTrace
 
 trait TelesignException extends NoStackTrace {
   def details: String
-  override def getMessage = details
+
+  override def getMessage: String = details
 }
 
 case class TelesignInvalidPhoneNumber(details: String) extends TelesignException
@@ -22,7 +26,21 @@ object TelesignInvalidPhoneNumber {
   }
 }
 
-case class TelesignRequestFailure(errors: Seq[TelesignError]) extends TelesignException {
-  require(errors.nonEmpty)
-  override val details = errors.mkString(", ")
+case class TelesignRequestFailure(details: String) extends TelesignException
+
+object TelesignRequestFailure {
+  def apply(failedStatus: Status): TelesignRequestFailure = {
+    require(Status.isFailed(failedStatus))
+    val details = s"Internal Telesign code wasn't successful ${failedStatus.code}: ${failedStatus.description}"
+    new TelesignRequestFailure(details)
+  }
+
+  def apply(httpStatus: StatusCode, responseBody: Option[String] = None): TelesignRequestFailure = {
+    require(!httpStatus.isSuccess())
+    val details = s"Http response wasn't successful ${httpStatus.intValue()}: ${httpStatus.defaultMessage()}"
+    new TelesignRequestFailure(s"$details${responseBody.map { b => s" response body: $b" }.getOrElse("")}")
+  }
+
+  def apply(httpStatus: StatusCode, responseBody: String): TelesignRequestFailure =
+    apply(httpStatus, Some(responseBody))
 }

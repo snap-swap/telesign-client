@@ -4,6 +4,7 @@ import akka.actor.ActorSystem
 import akka.event.Logging
 import akka.stream.Materializer
 import com.snapswap.telesign._
+import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
 import com.snapswap.telesign.model.external._
 import com.snapswap.telesign.model.internal.{SmsVerifyResponse, VerifyResponse}
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
@@ -25,10 +26,24 @@ class AkkaHttpTelesignClient(override val customerId: String,
 
   private val log = Logging(system, this.getClass)
 
-  override def getScore(number: String): Future[PhoneScore] =
-    send(get(s"/phoneid/score/$number?ucid=$useCaseCode")) { responseStr =>
-      responseStr.parseJson.convertTo[PhoneScore]
+  override def scorePhoneNumber(phoneNumber: String,
+                                accountLifecycleEvent: TelesignAccountLifecycleEvent = AccountLifecycleEventEnum.update,
+                                originatingIP: Option[IPAddress] = None,
+                                deviceId: Option[String] = None,
+                                accountId: Option[String] = None,
+                                accountEmail: Option[String] = None): Future[PhoneScore] = {
+    val params = Seq(
+      Option("account_lifecycle_event" -> accountLifecycleEvent.toString),
+      originatingIP.map("originating_ip" -> _.value),
+      deviceId.map("device_id" -> _),
+      accountId.map("account_id" -> _),
+      accountEmail.map("email_address" -> _)
+    ).flatten.toMap
+
+    send(post(s"/score/$phoneNumber", params)){raw =>
+      raw.parseJson.convertTo[PhoneScore]
     }
+  }
 
   override def initiateVerification(number: String, code: String): Future[PhoneVerificationId] =
     send(

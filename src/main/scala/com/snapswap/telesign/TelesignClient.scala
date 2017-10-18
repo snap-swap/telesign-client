@@ -1,11 +1,17 @@
 package com.snapswap.telesign
 
-import com.snapswap.telesign.model.external.{PhoneScore, PhoneVerification, PhoneVerificationId}
+import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
+import com.snapswap.telesign.model.external.{PhoneScore, PhoneVerification, PhoneVerificationId, _}
 
 import scala.concurrent.Future
 
 trait TelesignClient {
-  def getScore(number: String): Future[PhoneScore]
+  def scorePhoneNumber(phoneNumber: String,
+                       accountLifecycleEvent: TelesignAccountLifecycleEvent = AccountLifecycleEventEnum.update,
+                       originatingIP: Option[IPAddress] = None,
+                       deviceId: Option[String] = None,
+                       accountId: Option[String] = None,
+                       accountEmail: Option[String] = None): Future[PhoneScore]
 
   def initiateVerification(number: String, code: String): Future[PhoneVerificationId]
 
