@@ -31,7 +31,7 @@ class AkkaHttpTelesignClient(override val customerId: String,
                                 originatingIP: Option[IPAddress] = None,
                                 deviceId: Option[String] = None,
                                 accountId: Option[String] = None,
-                                accountEmail: Option[String] = None): Future[PhoneScore] = {
+                                accountEmail: Option[String] = None): Future[TelesignPhoneScore] = {
     val params = Seq(
       Option("account_lifecycle_event" -> accountLifecycleEvent.toString),
       originatingIP.map("originating_ip" -> _.value),
@@ -40,8 +40,8 @@ class AkkaHttpTelesignClient(override val customerId: String,
       accountEmail.map("email_address" -> _)
     ).flatten.toMap
 
-    send(post(s"/score/$phoneNumber", params)){raw =>
-      raw.parseJson.convertTo[PhoneScore]
+    send(post(s"/score/$phoneNumber", params)) { raw =>
+      raw.parseJson.convertTo[TelesignPhoneScore]
     }
   }
 

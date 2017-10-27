@@ -1,6 +1,9 @@
 package com.snapswap.telesign.unmarshaller
 
-import com.snapswap.telesign.model.external.{EnumPhoneTypes, PhoneScore, TelesignInvalidPhoneNumber, TelesignRequestFailure}
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+import com.snapswap.telesign.model.external._
 import com.snapswap.telesign.model.internal.{Carrier, CleansingNumber, Coordinates, Country, Location, Number, Numbering, OriginalNumber, PhoneIdResponse, PhoneType, Status, TimeZone}
 import spray.json._
 
@@ -21,6 +24,33 @@ trait PhoneIdResponseUnmarshaller
   implicit val carrierFormat = jsonFormat1(Carrier)
   implicit val locationFormat = jsonFormat(Location, "county", "city", "state", "zip", "country", "time_zone", "coordinates", "metro_code")
   implicit val phoneIdResponseFormat = jsonFormat(PhoneIdResponse, "reference_id", "resource_uri", "sub_resource", "phone_type", "signature_string", "status", "numbering", "location", "carrier", "risk")
+
+
+  implicit object TelesignPhoneScoreFormat extends RootJsonReader[TelesignPhoneScore]{
+
+    override def read(json: JsValue): TelesignPhoneScore = Try{
+      val response: PhoneIdResponse = phoneIdResponseFormat.read(json)
+
+      val number = response.numbering.flatMap(_.cleansing.map(_.call).map{case Number(phone, code, _, _, _) =>
+        s"$code$phone"
+      }).getOrElse(throw TelesignInvalidPhoneNumber("E.164 phone number is not detected"))
+
+      val riskLevel = response.risk.map{r =>
+        RiskLevelEnum.withName(r.level)
+      }.getOrElse(RiskLevelEnum.high)
+
+      val phoneType = response.phoneType.flatMap{t =>
+        Try(EnumPhoneTypes.withId(t.code.toInt)).toOption
+      }.getOrElse(EnumPhoneTypes.Other)
+
+      val carrier = response.carrier.map(_.name).getOrElse("Unknown")
+
+      val timestamp = ZonedDateTime.parse(response.status.updatedOn, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+
+      TelesignPhoneScore(phone = number, riskLevel = riskLevel, phoneType = phoneType, carrier = carrier, updatedOn = timestamp)
+    }.getOrElse(deserializationError(s"can't parse response into TelesignPhoneScore, raw response: ${json.compactPrint}"))
+  }
+
 
   implicit val phoneScoreReader = new RootJsonReader[PhoneScore] {
     override def read(json: JsValue) = {

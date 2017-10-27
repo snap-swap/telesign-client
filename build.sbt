@@ -1,8 +1,8 @@
-name := "telesign-api-client"
+name := "telesign-client"
 
 organization  := "com.snapswap"
 
-version       := "1.0.2"
+version       := "1.0.0"
 
 scalaVersion  := "2.11.8"
 

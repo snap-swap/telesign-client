@@ -1,6 +1,9 @@
 package com.snapswap.telesign.model
 
-import com.snapswap.telesign.model.external.{EnumPhoneTypes, PhoneScore, TelesignError, TelesignInvalidPhoneNumber}
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
+
+import com.snapswap.telesign.model.external._
 import com.snapswap.telesign.model.internal.ErrorResponse
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import org.scalatest.{FlatSpec, Matchers}
@@ -11,10 +14,18 @@ class UnMarshallerSpec extends FlatSpec with Matchers {
 
   "Unmarshaller" should "be able to parse PhoneScore from a success response" in {
     val score = phoneIdScoreResponse.parseJson.convertTo[PhoneScore]
-    score.phone shouldBe "79201111111"
+    score.phone shouldBe "79005557788"
     score.phoneType shouldBe EnumPhoneTypes.Mobile
     score.country shouldBe "RUS"
     score.score shouldBe 11
+  }
+  it should "be able to parse TelesignPhoneScore from a success response" in {
+    val score = phoneIdScoreResponse.parseJson.convertTo[TelesignPhoneScore]
+    score.phone shouldBe "79005557788"
+    score.phoneType shouldBe EnumPhoneTypes.Mobile
+    score.carrier shouldBe "T2 Mobile"
+    score.riskLevel shouldBe RiskLevelEnum.low
+    score.updatedOn shouldBe ZonedDateTime.parse("2017-10-18T09:48:41.019078Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME)
   }
   it should "be able to parse errors from a failure response" in {
     val errorResponse = phoneIdAuthorizationErrorResponse.parseJson.convertTo[ErrorResponse]
@@ -27,57 +38,44 @@ class UnMarshallerSpec extends FlatSpec with Matchers {
 
   private val phoneIdScoreResponse =
     """{
-      |  "reference_id": "35485E92B394131C9046279B2E6E6C2F",
-      |  "resource_uri": null,
-      |  "sub_resource": "score",
-      |  "status": {
-      |    "updated_on": "2016-01-06T15:53:34.239877Z",
-      |    "code": 300,
-      |    "description": "Transaction successfully completed"
-      |  },
-      |  "errors": [],
       |  "numbering": {
       |    "original": {
-      |      "complete_phone_number": "79201111111",
+      |      "complete_phone_number": "79005557788",
       |      "country_code": "7",
-      |      "phone_number": "9201111111"
+      |      "phone_number": "9005557788"
       |    },
       |    "cleansing": {
       |      "call": {
+      |        "phone_number": "9005557788",
       |        "country_code": "7",
-      |        "phone_number": "9201111111",
-      |        "cleansed_code": 100,
       |        "min_length": 10,
-      |        "max_length": 10
+      |        "max_length": 10,
+      |        "cleansed_code": 100
       |      },
       |      "sms": {
+      |        "phone_number": "9005557788",
       |        "country_code": "7",
-      |        "phone_number": "9201111111",
-      |        "cleansed_code": 100,
       |        "min_length": 10,
-      |        "max_length": 10
+      |        "max_length": 10,
+      |        "cleansed_code": 100
       |      }
       |    }
       |  },
-      |  "phone_type": {
-      |    "code": "2",
-      |    "description": "MOBILE"
-      |  },
       |  "location": {
+      |    "coordinates": {
+      |      "latitude": null,
+      |      "longitude": null
+      |    },
       |    "city": "Kaluga Region",
-      |    "state": null,
       |    "zip": null,
+      |    "state": null,
       |    "metro_code": null,
-      |    "county": null,
       |    "country": {
       |      "name": "Russia",
       |      "iso2": "RU",
       |      "iso3": "RUS"
       |    },
-      |    "coordinates": {
-      |      "latitude": null,
-      |      "longitude": null
-      |    },
+      |    "county": null,
       |    "time_zone": {
       |      "name": null,
       |      "utc_offset_min": "+2",
@@ -85,12 +83,28 @@ class UnMarshallerSpec extends FlatSpec with Matchers {
       |    }
       |  },
       |  "carrier": {
-      |    "name": "MegaFon Central Branch"
+      |    "name": "T2 Mobile"
       |  },
       |  "risk": {
       |    "level": "low",
       |    "recommendation": "allow",
       |    "score": 11
+      |  },
+      |  "reference_id": "357CBB8A40D8051C9045B408AB0E0E2F",
+      |  "phone_type": {
+      |    "code": "2",
+      |    "description": "MOBILE"
+      |  },
+      |  "status": {
+      |    "updated_on": "2017-10-18T09:48:41.019078Z",
+      |    "code": 300,
+      |    "description": "Transaction successfully completed"
+      |  },
+      |  "external_id": null,
+      |  "blocklisting": {
+      |    "blocked": false,
+      |    "block_code": 0,
+      |    "block_description": "Not blocked"
       |  }
       |}""".stripMargin
 
