@@ -14,7 +14,7 @@ import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.unmarshalling.Unmarshal
 import akka.stream.Materializer
 import akka.stream.scaladsl.{Sink, Source}
-import com.snapswap.telesign.model.external.TelesignRequestFailure
+import com.snapswap.telesign.model.external.exceptions.TelesignRequestFailure
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import com.snapswap.telesign.utils.DateTimeHelper._
 

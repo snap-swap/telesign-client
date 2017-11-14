@@ -70,41 +70,29 @@ private[telesign] object EnumVerifyCodeState extends Enumeration {
 /**
   * An object that describes the verification status.
   *
-  * @param codeState    Indicates whether the verification code entered matches that which was sent. Possible values are VALID, INVALID, or UNKNOWN.
-  *                     When the code entered matches the code sent, the response will be VALID.
-  *                     When the code entered does not match the code sent, code_state will be INVALID.
-  * @param codeEntered  Always set to an empty string.
-  * @param codeExpected In case of code challenge, contains the verification code presented to the user otherwise contains null if Simple push verification.
+  * @param codeState   Indicates whether the verification code entered matches that which was sent. Possible values are VALID, INVALID, or UNKNOWN.
+  *                    When the code entered matches the code sent, the response will be VALID.
+  *                    When the code entered does not match the code sent, code_state will be INVALID.
+  * @param codeEntered Always set to an empty string.
   */
 private[telesign] case class Verify(codeState: EnumVerifyCodeState.VerifyCodeState,
-                                    codeEntered: Option[String],
-                                    codeExpected: Option[String])
+                                    codeEntered: Option[String])
 
 /**
   * The <strong>VerifyResponse</strong> class encapsulates all of the information returned from a call to either the <strong>Verify SMS</strong> web service, or to the <strong>Verify Call</strong>  web service.
   *
-  * @param referenceId    A String containing a <em>reference identifier</em> that uniquely identifies the Request message that initiated this Response.
-  * @param resourceUri    A String containing the URI for accesses the PhoneID resource.
-  * @param subResource    A String containing the name of the subresource that was accessed. For example, "standard".
-  * @param errors         An array of [[TelesignError]] objects.
-  *                       Each Error object contains information about an error condition that might have resulted from the Request.
-  * @param status         An object containing details about the request status.
-  * @param device         An object that describes aspects of the user's phone.
-  * @param app            An object that identifies your whitelabel app (customized/branded version of our AuthID application).
-  * @param callForwarding An object that describes the call forwarding status.
-  * @param verify         An object that describes the verification status.
-  * @param userResponse   An object that describes the user's verification response.
-  * @param risk           An object that describes the risk score for the phone number specified in the request.
+  * @param referenceId A String containing a <em>reference identifier</em> that uniquely identifies the Request message that initiated this Response.
+  * @param resourceUri A String containing the URI for accesses the PhoneID resource.
+  * @param subResource A String containing the name of the subresource that was accessed. For example, "standard".
+  * @param errors      An array of [[TelesignError]] objects.
+  *                    Each Error object contains information about an error condition that might have resulted from the Request.
+  * @param status      An object containing details about the request status.
+  * @param verify      An object that describes the verification status.
   */
 private[telesign] case class VerifyResponse(referenceId: Option[String],
                                             resourceUri: Option[String],
                                             subResource: Option[String],
                                             errors: Seq[TelesignError],
                                             status: Status,
-                                            device: Option[Device],
-                                            app: Option[App],
-                                            callForwarding: Option[CallForwarding],
-                                            verify: Option[Verify],
-                                            userResponse: Option[UserResponse],
-                                            risk: Option[Risk])
+                                            verify: Option[Verify])
 

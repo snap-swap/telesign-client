@@ -13,6 +13,12 @@ trait TelesignClient {
                        accountId: Option[String] = None,
                        accountEmail: Option[String] = None): Future[TelesignPhoneScore]
 
+  def sendMessage(phoneNumber: String,
+                  verifyCode: Option[String], // if not defined, Telesign will generate a random code itself
+                  template: String = "Your code is $$CODE$$",
+                  senderId: Option[String] = None,
+                  originatingIP: Option[IPAddress] = None): Future[PhoneVerificationId]
+
   def initiateVerification(number: String, code: String): Future[PhoneVerificationId]
 
   def getVerification(id: PhoneVerificationId): Future[PhoneVerification]

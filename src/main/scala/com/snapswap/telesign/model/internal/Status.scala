@@ -13,7 +13,10 @@ private[telesign] case class Status(updatedOn: String,
                                     description: String)
 
 private[telesign] object Status {
-  private val successfulCodes = Seq(300, 301)
+  private val successfulCodes = Seq(
+    300, 301, //scoring
+    200, 203, 250, 290, 291, 292, 295, 599 //messaging
+  )
 
   def isFailed(status: Status): Boolean =
     !successfulCodes.contains(status.code)

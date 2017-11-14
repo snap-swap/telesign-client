@@ -45,6 +45,25 @@ class AkkaHttpTelesignClient(override val customerId: String,
     }
   }
 
+  override def sendMessage(phoneNumber: String,
+                           verifyCode: Option[String], // if not defined, Telesign will generate a random code itself
+                           template: String = "Your code is $$CODE$$",
+                           senderId: Option[String] = None,
+                           originatingIP: Option[IPAddress] = None): Future[PhoneVerificationId] = {
+    val params = Seq(
+      Option("phone_number" -> phoneNumber),
+      verifyCode.map("verify_code" -> _),
+      Option("template" -> template),
+      Option("ucid" -> useCaseCode.toString),
+      senderId.map("sender_id" -> _),
+      originatingIP.map("originating_ip" -> _.value)
+    ).flatten.toMap
+
+    send(post("/verify/sms", params)) { raw =>
+      raw.parseJson.convertTo[PhoneVerificationId]
+    }
+  }
+
   override def initiateVerification(number: String, code: String): Future[PhoneVerificationId] =
     send(
       post(s"/verify/sms",
