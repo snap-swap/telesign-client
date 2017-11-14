@@ -2,7 +2,7 @@ package com.snapswap.telesign.unmarshaller
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
 import com.snapswap.telesign.model.external.TelesignError
-import com.snapswap.telesign.model.internal.{ErrorResponse, Risk, Status}
+import com.snapswap.telesign.model.internal.{Risk, Status}
 import spray.json._
 
 trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -20,6 +20,4 @@ trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
   implicit val statusFormat = jsonFormat(Status.apply, "updated_on", "code", "description")
 
   implicit val riskFormat = jsonFormat3(Risk)
-
-  implicit val errorResponseFormat = jsonFormat(ErrorResponse, "reference_id", "resource_uri", "sub_resource", "errors")
 }

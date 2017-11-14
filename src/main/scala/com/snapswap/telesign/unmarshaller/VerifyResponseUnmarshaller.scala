@@ -23,7 +23,6 @@ trait VerifyResponseUnmarshaller {
   implicit val verifyFormat = jsonFormat(Verify, "code_state", "code_entered")
 
   implicit val verifyResponseFormat = jsonFormat(VerifyResponse, "reference_id", "resource_uri", "sub_resource", "errors", "status", "verify")
-  implicit val smsVerifyResponseFormat = jsonFormat(SmsVerifyResponse, "reference_id", "resource_uri", "sub_resource", "errors", "status", "user_response")
 
   implicit object PhoneVerificationIdFormat extends RootJsonReader[PhoneVerificationId] {
     override def read(json: JsValue): PhoneVerificationId = Try {

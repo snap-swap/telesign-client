@@ -6,7 +6,6 @@ import akka.stream.Materializer
 import com.snapswap.telesign._
 import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
 import com.snapswap.telesign.model.external._
-import com.snapswap.telesign.model.internal.{SmsVerifyResponse, VerifyResponse}
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import spray.json._
 
@@ -63,31 +62,5 @@ class AkkaHttpTelesignClient(override val customerId: String,
       raw.parseJson.convertTo[PhoneVerificationId]
     }
   }
-
-  override def initiateVerification(number: String, code: String): Future[PhoneVerificationId] =
-    send(
-      post(s"/verify/sms",
-        Map(
-          "phone_number" -> number,
-          "language" -> "en-US",
-          "template" -> code
-        )
-      )
-    ) { responseStr =>
-      val response = responseStr.parseJson.convertTo[SmsVerifyResponse]
-
-      PhoneVerificationId(response.referenceId)
-    }
-
-  override def getVerification(id: PhoneVerificationId): Future[PhoneVerification] =
-    send(get(s"/verify/${id.value}")) { responseStr =>
-      val response = responseStr.parseJson.convertTo[VerifyResponse]
-
-
-      PhoneVerification(id,
-        response.errors,
-        EnumSmsStatusCodes.withCode(response.status.code)
-      )
-    }
 
 }

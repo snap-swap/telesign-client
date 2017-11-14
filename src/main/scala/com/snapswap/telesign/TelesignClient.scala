@@ -1,7 +1,7 @@
 package com.snapswap.telesign
 
 import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
-import com.snapswap.telesign.model.external.{PhoneVerification, PhoneVerificationId, _}
+import com.snapswap.telesign.model.external.{PhoneVerificationId, _}
 
 import scala.concurrent.Future
 
@@ -19,7 +19,4 @@ trait TelesignClient {
                   senderId: Option[String] = None,
                   originatingIP: Option[IPAddress] = None): Future[PhoneVerificationId]
 
-  def initiateVerification(number: String, code: String): Future[PhoneVerificationId]
-
-  def getVerification(id: PhoneVerificationId): Future[PhoneVerification]
 }
