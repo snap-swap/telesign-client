@@ -1,8 +1,7 @@
 package com.snapswap.telesign.unmarshaller
 
 import akka.http.scaladsl.marshallers.sprayjson.SprayJsonSupport
-import com.snapswap.telesign.model.external.TelesignError
-import com.snapswap.telesign.model.internal.{Risk, Status}
+import com.snapswap.telesign.model.internal.{Error, Risk, Status}
 import spray.json._
 
 trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
@@ -15,7 +14,7 @@ trait CommonJsonSupport extends SprayJsonSupport with DefaultJsonProtocol {
     def write(v: enum.Value): JsValue = JsString(v.toString)
   }
 
-  implicit val errorFormat = jsonFormat2(TelesignError)
+  implicit val errorFormat = jsonFormat2(Error)
 
   implicit val statusFormat = jsonFormat(Status.apply, "updated_on", "code", "description")
 

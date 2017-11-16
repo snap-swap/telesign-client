@@ -8,7 +8,7 @@ import javax.crypto.spec.SecretKeySpec
 import akka.actor.ActorSystem
 import akka.event.LoggingAdapter
 import akka.http.scaladsl.Http
-import akka.http.scaladsl.client.RequestBuilding.{Get, Post}
+import akka.http.scaladsl.client.RequestBuilding.{Get, Post, Put}
 import akka.http.scaladsl.model._
 import akka.http.scaladsl.model.headers.RawHeader
 import akka.http.scaladsl.unmarshalling.Unmarshal
@@ -50,6 +50,9 @@ trait HttpMethods {
 
   def get(path: String): HttpRequest =
     Get(baseURL + path)
+
+  def put(path: String): HttpRequest =
+    Put(baseURL + path)
 
   def post(path: String, fields: Map[String, String]): HttpRequest = {
     val endpoint = baseURL + path
@@ -94,7 +97,7 @@ trait HttpMethods {
       RawHeader("Authorization", s"TSA $customerId:$signature")
 
     val (contentType, requestBody) =
-      if (request.method == HttpMethods.POST || request.method == HttpMethods.PUT) {
+      if (request.method == HttpMethods.POST) {
         request.entity.contentType.toString() -> Unmarshal(request.entity).to[FormData].map { form =>
           form.fields.map {
             case (key, value) =>

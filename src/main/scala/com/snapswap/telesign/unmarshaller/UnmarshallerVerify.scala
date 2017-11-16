@@ -4,5 +4,6 @@ trait UnmarshallerVerify
   extends CommonJsonSupport
     with VerifyResponseUnmarshaller
     with PhoneScoringResponseUnmarshaller
+    with CompletionResponseUnmarshaller
 
 object UnmarshallerVerify extends UnmarshallerVerify

@@ -19,4 +19,6 @@ trait TelesignClient {
                   senderId: Option[String] = None,
                   originatingIP: Option[IPAddress] = None): Future[PhoneVerificationId]
 
+  def recordVerificationCompletion(referenceId: PhoneVerificationId): Future[Unit]
+
 }

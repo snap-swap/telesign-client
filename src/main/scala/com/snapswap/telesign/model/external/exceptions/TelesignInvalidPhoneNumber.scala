@@ -1,9 +1,9 @@
 package com.snapswap.telesign.model.external.exceptions
 
 
-case class TelesignInvalidPhoneNumber(details: String) extends TelesignException
+case class TelesignInvalidPhoneNumber(details: String) extends TelesignError
 
-object TelesignInvalidPhoneNumber {
+private[telesign] object TelesignInvalidPhoneNumber {
   def apply(cleansingCode: Int): Option[TelesignInvalidPhoneNumber] = {
     val details: Option[String] = cleansingCode match {
       case 105 => Some("The phone number length is too long or too short")

@@ -15,7 +15,8 @@ private[telesign] case class Status(updatedOn: String,
 private[telesign] object Status {
   private val successfulCodes = Seq(
     300, 301, //scoring
-    200, 203, 250, 290, 291, 292, 295, 599 //messaging
+    200, 203, 250, 290, 291, 292, 295, 599, //messaging
+    1900 //completion
   )
 
   def isFailed(status: Status): Boolean =

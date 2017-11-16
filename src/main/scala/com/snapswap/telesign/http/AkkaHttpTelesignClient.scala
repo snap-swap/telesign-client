@@ -6,6 +6,7 @@ import akka.stream.Materializer
 import com.snapswap.telesign._
 import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
 import com.snapswap.telesign.model.external._
+import com.snapswap.telesign.model.internal.CompletionDone
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import spray.json._
 
@@ -60,6 +61,13 @@ class AkkaHttpTelesignClient(override val customerId: String,
 
     send(post("/verify/sms", params)) { raw =>
       raw.parseJson.convertTo[PhoneVerificationId]
+    }
+  }
+
+  override def recordVerificationCompletion(referenceId: PhoneVerificationId): Future[Unit] = {
+    send(put(s"/verify/completion/${referenceId.value}")) { raw =>
+      raw.parseJson.convertTo[CompletionDone]
+      ()
     }
   }
 

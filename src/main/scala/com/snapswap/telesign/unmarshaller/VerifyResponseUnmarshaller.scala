@@ -1,7 +1,7 @@
 package com.snapswap.telesign.unmarshaller
 
 import com.snapswap.telesign.model.external.PhoneVerificationId
-import com.snapswap.telesign.model.external.exceptions.{TelesignException, TelesignResponseFailure}
+import com.snapswap.telesign.model.external.exceptions.{TelesignError, TelesignResponseFailure}
 import com.snapswap.telesign.model.internal._
 import spray.json._
 
@@ -10,19 +10,11 @@ import scala.util.{Failure, Success, Try}
 trait VerifyResponseUnmarshaller {
   this: CommonJsonSupport with DefaultJsonProtocol =>
 
-  implicit val deviceFormat = jsonFormat(Device, "phone_number", "operating_system", "language")
-  implicit val appFormat = jsonFormat(App, "signature", "created_on_utc")
-
-  implicit val callForwardActionEnumFormat = enumNameFormat(EnumCallForwardAction)
-  implicit val callForwardEnumFormat = enumNameFormat(EnumCallForward)
-  implicit val enumUserResponseSelectionFormat = enumNameFormat(EnumUserResponseSelection)
-  implicit val verifyCodeStateEnumFormat = enumNameFormat(EnumVerifyCodeState)
-
-  implicit val callForwardingFormat = jsonFormat(CallForwarding, "action", "call_forward")
-  implicit val userResponseFormat = jsonFormat(UserResponse, "received", "verification_code", "selection")
-  implicit val verifyFormat = jsonFormat(Verify, "code_state", "code_entered")
-
-  implicit val verifyResponseFormat = jsonFormat(VerifyResponse, "reference_id", "resource_uri", "sub_resource", "errors", "status", "verify")
+  private implicit val verifyCodeStateEnumFormat = enumNameFormat(EnumVerifyCodeState)
+  private implicit val verifyFormat = jsonFormat(Verify, "code_state", "code_entered")
+  private implicit val verifyResponseFormat = jsonFormat(VerifyResponse,
+    "reference_id", "resource_uri", "sub_resource", "errors", "status", "verify"
+  )
 
   implicit object PhoneVerificationIdFormat extends RootJsonReader[PhoneVerificationId] {
     override def read(json: JsValue): PhoneVerificationId = Try {
@@ -38,7 +30,7 @@ trait VerifyResponseUnmarshaller {
         PhoneVerificationId(referenceId)
       }
     } match {
-      case Failure(ex: TelesignException) =>
+      case Failure(ex: TelesignError) =>
         throw ex
       case Success(referenceId) =>
         referenceId

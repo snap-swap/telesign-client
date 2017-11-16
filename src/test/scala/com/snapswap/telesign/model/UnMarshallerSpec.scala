@@ -5,6 +5,7 @@ import java.time.format.DateTimeFormatter
 
 import com.snapswap.telesign.model.external._
 import com.snapswap.telesign.model.external.exceptions.{TelesignInvalidPhoneNumber, TelesignResponseFailure}
+import com.snapswap.telesign.model.internal.CompletionDone
 import com.snapswap.telesign.unmarshaller.UnmarshallerVerify
 import org.scalatest.{Matchers, WordSpec}
 import spray.json._
@@ -49,6 +50,20 @@ class UnMarshallerSpec extends WordSpec with Matchers {
       }
       "throw TelesignResponseFailure if errors are containing in the response" in {
         val exception = the[TelesignResponseFailure] thrownBy VerifyResponses.withErrors.parseJson.convertTo[PhoneVerificationId]
+        exception.getMessage should include("Some errors occurred in the telesign response")
+      }
+    }
+    "unmarshall into CompletionDone" should {
+      "successfully unmarshall if there are no any exceptions" in {
+        val completionResponse = CompletionResponses.successful.parseJson.convertTo[CompletionDone]
+        completionResponse shouldBe CompletionDone()
+      }
+      "throw TelesignResponseFailure if status wasn't successful" in {
+        val exception = the[TelesignResponseFailure] thrownBy CompletionResponses.withBadStatus.parseJson.convertTo[CompletionDone]
+        exception.getMessage should include("Internal Telesign code wasn't successful")
+      }
+      "throw TelesignResponseFailure if errors are containing in the response" in {
+        val exception = the[TelesignResponseFailure] thrownBy CompletionResponses.withErrors.parseJson.convertTo[CompletionDone]
         exception.getMessage should include("Some errors occurred in the telesign response")
       }
     }

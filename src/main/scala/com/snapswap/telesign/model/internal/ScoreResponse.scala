@@ -114,7 +114,7 @@ private[telesign] case class Location(county: Option[String],
                                       metroCode: Option[String])
 
 /**
-  * The <strong>PhoneIdStandardResponse</strong> class encapsulates all of the information returned from a call to the <strong>PhoneID Standard</strong> web service.
+  * The <strong>ScoreResponse</strong> class encapsulates all of the information returned from a call to the <strong>Score API</strong>.
   *
   * @param referenceId     A String containing a <em>reference identifier</em> that uniquely identifies the Request message that initiated this Response.
   * @param resourceUri     A String containing the URI for accesses the PhoneID resource.
@@ -128,13 +128,13 @@ private[telesign] case class Location(county: Option[String],
   * @param carrier         An object containing information about the company that provides telecommunications services for the phone number.
   * @param risk            An object that describes the risk score for the phone number specified in the request.
   */
-private[telesign] case class PhoneIdResponse(referenceId: Option[String],
-                                             resourceUri: Option[String],
-                                             subResource: Option[String],
-                                             phoneType: Option[PhoneType],
-                                             signatureString: Option[String],
-                                             status: Status,
-                                             numbering: Option[Numbering],
-                                             location: Option[Location],
-                                             carrier: Option[Carrier],
-                                             risk: Option[Risk])
+private[telesign] case class ScoreResponse(referenceId: Option[String],
+                                           resourceUri: Option[String],
+                                           subResource: Option[String],
+                                           phoneType: Option[PhoneType],
+                                           signatureString: Option[String],
+                                           status: Status,
+                                           numbering: Option[Numbering],
+                                           location: Option[Location],
+                                           carrier: Option[Carrier],
+                                           risk: Option[Risk])

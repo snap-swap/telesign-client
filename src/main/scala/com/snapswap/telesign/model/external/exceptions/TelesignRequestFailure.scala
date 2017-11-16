@@ -3,7 +3,7 @@ package com.snapswap.telesign.model.external.exceptions
 import akka.http.scaladsl.model.StatusCode
 
 
-case class TelesignRequestFailure(httpStatus: StatusCode, responseBody: String) extends TelesignException {
+case class TelesignRequestFailure(httpStatus: StatusCode, responseBody: String) extends TelesignError {
   require(!httpStatus.isSuccess())
 
   override def details: String =
