@@ -63,13 +63,18 @@ trait PhoneScoringResponseUnmarshaller {
 
       val timestamp = ZonedDateTime.parse(response.status.updatedOn, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
 
+      val iso3CountryCode =
+        response.location.flatMap(_.country).map(_.iso3)
+        .getOrElse(throw TelesignResponseFailure("can't parse iso3 country code", json))
+
       TelesignPhoneScore(
         phone = number,
         riskLevel = riskLevel,
         riskScore = riskScore,
         phoneType = phoneType,
         carrier = carrier,
-        updatedOn = timestamp
+        updatedOn = timestamp,
+        iso3CountryCode = iso3CountryCode
       )
 
     } match {

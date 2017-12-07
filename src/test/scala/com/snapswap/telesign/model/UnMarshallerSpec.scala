@@ -24,6 +24,11 @@ class UnMarshallerSpec extends WordSpec with Matchers {
         score.riskLevel shouldBe RiskLevelEnum.low
         score.riskScore shouldBe 11
         score.updatedOn shouldBe ZonedDateTime.parse("2017-10-18T09:48:41.019078Z", DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+        score.iso3CountryCode shouldBe "RUS"
+      }
+      "throw TelesignResponseFailure if iso3 country code wasn't provided" in {
+        val exception = the[TelesignResponseFailure] thrownBy PhoneScoreResponses.withoutCountry.parseJson.convertTo[TelesignPhoneScore]
+        exception.getMessage should include("can't parse iso3 country code")
       }
       "throw TelesignResponseFailure if status wasn't successful" in {
         val exception = the[TelesignResponseFailure] thrownBy PhoneScoreResponses.withBadStatus.parseJson.convertTo[TelesignPhoneScore]

@@ -1,7 +1,7 @@
 package com.snapswap.telesign.model
 
 object PhoneScoreResponses {
-  private def basicResponse(cleansedCode: Int, withPhone: Boolean) = {
+  private def basicResponse(cleansedCode: Int, withPhone: Boolean, withCountry: Boolean) = {
     val phone = if (withPhone)
       s"""
          |   ,"cleansing": {
@@ -24,6 +24,17 @@ object PhoneScoreResponses {
     else
       ""
 
+    val country = if (withCountry)
+      """
+        |    "country": {
+        |      "name": "Russia",
+        |      "iso2": "RU",
+        |      "iso3": "RUS"
+        |    },
+        """.stripMargin
+    else
+      ""
+
     s"""{
        |  "numbering": {
        |    "original": {
@@ -42,11 +53,7 @@ object PhoneScoreResponses {
        |    "zip": null,
        |    "state": null,
        |    "metro_code": null,
-       |    "country": {
-       |      "name": "Russia",
-       |      "iso2": "RU",
-       |      "iso3": "RUS"
-       |    },
+       |    $country
        |    "county": null,
        |    "time_zone": {
        |      "name": null,
@@ -81,11 +88,11 @@ object PhoneScoreResponses {
        |}""".stripMargin
   }
 
-  val successful: String = basicResponse(100, withPhone = true)
+  val successful: String = basicResponse(100, withPhone = true, withCountry = true)
 
-  val withoutPhone: String = basicResponse(100, withPhone = false)
+  val withoutPhone: String = basicResponse(100, withPhone = false, withCountry = true)
 
-  val withBadPhone: String = basicResponse(103, withPhone = true)
+  val withBadPhone: String = basicResponse(103, withPhone = true, withCountry = true)
 
   val withBadStatus: String =
     """{
@@ -96,4 +103,6 @@ object PhoneScoreResponses {
       |       "updated_on": "2017-03-28T23:05:48.398146Z"
       |		}
       |}""".stripMargin
+
+  val withoutCountry: String = basicResponse(100, withPhone = true, withCountry = false)
 }

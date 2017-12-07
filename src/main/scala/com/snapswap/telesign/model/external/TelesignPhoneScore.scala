@@ -9,4 +9,5 @@ case class TelesignPhoneScore(phone: String,
                               riskScore: Int,
                               phoneType: EnumPhoneTypes.PhoneType,
                               carrier: String,
-                              updatedOn: ZonedDateTime)
+                              updatedOn: ZonedDateTime,
+                              iso3CountryCode: String)
