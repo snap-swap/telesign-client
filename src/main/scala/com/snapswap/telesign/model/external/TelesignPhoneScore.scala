@@ -11,7 +11,8 @@ case class TelesignPhoneScore(phone: String,
                               phoneType: EnumPhoneTypes.PhoneType,
                               carrier: String,
                               updatedOn: ZonedDateTime,
-                              iso3CountryCode: String) {
+                              iso3CountryCode: String,
+                              countryCode: String) {
   override def toString: String =
     s"""
        |phone = $phone,
@@ -21,5 +22,6 @@ case class TelesignPhoneScore(phone: String,
        |carrier = $carrier,
        |updatedOn = $updatedOn,
        |iso3CountryCode = $iso3CountryCode
+       |dialing code = $countryCode
      """.stripMargin
 }

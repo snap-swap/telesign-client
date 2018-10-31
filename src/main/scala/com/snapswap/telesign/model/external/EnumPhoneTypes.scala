@@ -126,4 +126,12 @@ object EnumPhoneTypes extends Enumeration {
       .getOrElse(
         throw new NoSuchElementException(s"No value found for Id [$id]")
       )
+
+  def withLabel(label: String): PhoneTypeValue =
+    values
+      .find(_.asInstanceOf[PhoneTypeValue].label == label)
+      .map(_.asInstanceOf[PhoneTypeValue])
+      .getOrElse(
+        throw new NoSuchElementException(s"No value found for Label [$label]")
+      )
 }

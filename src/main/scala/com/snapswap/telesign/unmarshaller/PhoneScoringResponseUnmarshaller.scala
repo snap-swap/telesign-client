@@ -46,10 +46,16 @@ trait PhoneScoringResponseUnmarshaller {
         throw TelesignResponseFailure(response.status, json)
       }
 
-      val number = response.numbering.flatMap(_.cleansing.map(_.call).flatMap { case Number(phone, code, _, _, cleansedCode) =>
-        TelesignInvalidPhoneNumber(cleansedCode).map(throw _)
-          .orElse(Option(s"$code$phone"))
-      }).getOrElse(throw TelesignInvalidPhoneNumber(s"E.164 phone number is not detected, response body: ${json.compactPrint}"))
+      val (number: String, countryCode: String) = response
+        .numbering
+        .flatMap(
+          _.cleansing.map(_.call).flatMap {
+            case Number(phone, code, _, _, cleansedCode) =>
+              TelesignInvalidPhoneNumber(cleansedCode)
+                .map(throw _)
+                .orElse(Option(Tuple2(s"$code$phone", code)))
+          })
+        .getOrElse(throw TelesignInvalidPhoneNumber(s"E.164 phone number is not detected, response body: ${json.compactPrint}"))
 
       val (riskLevel, riskScore) = response.risk.map { r =>
         RiskLevelEnum.withName(r.level) -> r.score
@@ -65,7 +71,7 @@ trait PhoneScoringResponseUnmarshaller {
 
       val iso3CountryCode =
         response.location.flatMap(_.country).map(_.iso3)
-        .getOrElse(throw TelesignResponseFailure("can't parse iso3 country code", json))
+          .getOrElse(throw TelesignResponseFailure("can't parse iso3 country code", json))
 
       TelesignPhoneScore(
         phone = number,
@@ -74,7 +80,8 @@ trait PhoneScoringResponseUnmarshaller {
         phoneType = phoneType,
         carrier = carrier,
         updatedOn = timestamp,
-        iso3CountryCode = iso3CountryCode
+        iso3CountryCode = iso3CountryCode,
+        countryCode = countryCode
       )
 
     } match {
