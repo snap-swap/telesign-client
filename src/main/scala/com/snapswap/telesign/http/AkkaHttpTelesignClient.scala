@@ -1,7 +1,7 @@
 package com.snapswap.telesign.http
 
 import akka.actor.ActorSystem
-import akka.event.Logging
+import akka.event.{Logging, LoggingAdapter}
 import akka.stream.Materializer
 import com.snapswap.telesign._
 import com.snapswap.telesign.model.external.AccountLifecycleEventEnum.TelesignAccountLifecycleEvent
@@ -23,8 +23,7 @@ class AkkaHttpTelesignClient(override val customerId: String,
 
   override val domain: String = "rest-ww.telesign.com"
   override val baseURL: String = "/v1"
-
-  private val log = Logging(system, this.getClass)
+  override val log: LoggingAdapter = Logging.getLogger(system, "telesign")
 
   override def scorePhoneNumber(phoneNumber: String,
                                 accountLifecycleEvent: TelesignAccountLifecycleEvent = AccountLifecycleEventEnum.update,

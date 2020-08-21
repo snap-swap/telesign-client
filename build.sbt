@@ -2,7 +2,7 @@ name := "telesign-client"
 
 organization  := "com.snapswap"
 
-version       := "1.0.3"
+version       := "1.0.4"
 
 scalaVersion  := "2.11.8"
 
@@ -29,6 +29,7 @@ libraryDependencies ++= {
   val akkaHttpV = "10.0.10"
   Seq(
     "com.typesafe.akka" %% "akka-http-spray-json" % akkaHttpV,
+    "com.snapswap" %% "akka-http-stream-client" % "0.2.1",
     "com.google.code.findbugs" % "jsr305" % "3.0.1" % "provided",
     "org.scalatest" %% "scalatest" % "3.0.4" % "test"
   )
